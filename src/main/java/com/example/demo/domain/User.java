@@ -39,6 +39,9 @@ public class User implements UserDetails {
   @Column(name = "password", nullable = false)
   private String password;
 
+  @Column(name = "nickname", unique = true) // nickname 컬럼 추가
+  private String nickname;
+
   @ElementCollection(fetch = FetchType.EAGER)
   @Builder.Default
   private List<String> roles = List.of("ROLE_USER");
