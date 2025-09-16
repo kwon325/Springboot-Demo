@@ -52,6 +52,7 @@ public class JwtTokenProvider {
 
   public Collection<? extends GrantedAuthority> getAuthorities(String token) {
     Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
+    @SuppressWarnings("unchecked")
     List<String> roles = claims.get("roles", List.class);
     return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
   }
