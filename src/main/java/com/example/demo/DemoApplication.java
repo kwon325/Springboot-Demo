@@ -15,13 +15,15 @@ import org.springframework.web.client.RestTemplate;
 @EnableAsync
 
 public class DemoApplication {
-    private static final Logger log = LoggerFactory.getLogger(DemoApplication.class);
 
-    public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
-    }
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
+  private static final Logger log = LoggerFactory.getLogger(DemoApplication.class);
+
+  public static void main(String[] args) {
+    SpringApplication.run(DemoApplication.class, args);
+  }
+
+  @Bean
+  public RestTemplate restTemplate(RestTemplateBuilder builder) {
+    return builder.build();
+  }
 }
