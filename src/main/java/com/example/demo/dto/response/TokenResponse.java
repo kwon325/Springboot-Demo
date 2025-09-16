@@ -1,5 +1,13 @@
 package com.example.demo.dto.response;
 
-public record TokenResponse(String accessToken) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record TokenResponse(
+    @JsonProperty("access_token")
+    String accessToken,
+
+    @JsonProperty("token_type")
+    String tokenType
+) {
 
 }

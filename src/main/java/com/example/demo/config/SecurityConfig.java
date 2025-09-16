@@ -21,7 +21,6 @@ public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  // authenticationManager Bean은 그대로 둡니다.
   @Bean
   public AuthenticationManager authenticationManager(
       AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -33,10 +32,8 @@ public class SecurityConfig {
     http.csrf(csrf -> csrf.disable()).sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        // ▼▼▼ 이 두 줄을 추가하여 기본 인증 방식을 비활성화합니다. ▼▼▼
-        .formLogin(form -> form.disable()) // 폼 로그인 방식 비활성화
-        .httpBasic(basic -> basic.disable()) // HTTP Basic 인증 방식 비활성화
-        // ▲▲▲ 여기까지 ▲▲▲
+        .formLogin(form -> form.disable())
+        .httpBasic(basic -> basic.disable())
 
         .authorizeHttpRequests(
             authz -> authz.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
