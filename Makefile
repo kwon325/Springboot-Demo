@@ -12,8 +12,6 @@ ifeq ($(RUN_MODE), local)
 	make local-run
 else ifeq ($(RUN_MODE), docker)
 	make docker-run
-else
-	@echo "Error: RUN_MODE는 'local' 또는 'docker'만 가능합니다."
 endif
 
 ## Spring Boot 앱 중지 (local/docker 모드)
@@ -22,28 +20,6 @@ ifeq ($(RUN_MODE), local)
 	@echo "로컬 모드에서는 Ctrl+C 로 직접 중지하세요."
 else ifeq ($(RUN_MODE), docker)
 	make api-down
-else
-	@echo "Error: RUN_MODE는 'local' 또는 'docker'만 가능합니다."
-endif
-
-## Spring Boot 앱 재시작 (local/docker 모드)
-restart:
-ifeq ($(RUN_MODE), local)
-	@echo "로컬 모드는 Ctrl+C로 중지 후 'make run'으로 다시 시작하세요."
-else ifeq ($(RUN_MODE), docker)
-	make api-restart
-else
-	@echo "Error: RUN_MODE는 'local' 또는 'docker'만 가능합니다."
-endif
-
-## Spring Boot 앱 로그 확인 (docker 모드 전용)
-logs:
-ifeq ($(RUN_MODE), local)
-	@echo "로컬 모드에서는 실행 중인 터미널에서 로그가 바로 보입니다."
-else ifeq ($(RUN_MODE), docker)
-	make api-log
-else
-	@echo "Error: RUN_MODE는 'local' 또는 'docker'만 가능합니다."
 endif
 
 ## 테스트 코드 실행
@@ -52,55 +28,50 @@ test:
 
 
 # ==================================================================================== #
-# Local Commands
+# Local Development Helper Commands
 # ==================================================================================== #
 
-## (Local) Spring Boot 앱을 로컬에서 직접 실행 (포그라운드)
+## (Local Dev) Spring Boot 앱을 로컬에서 직접 실행 (포그라운드)
 local-run:
 	./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 
+## (Local Dev) 개발에 필요한 외부 서비스(DB, Redis)만 실행
+start-deps:
+	docker compose up -d postgres redis
+
+## (Local Dev) 개발 외부 서비스(DB, Redis) 중지
+stop-deps:
+	docker compose stop postgres redis
+
+
 # ==================================================================================== #
-# Docker Commands
+# Docker Compose Commands
 # ==================================================================================== #
 
+## Docker Compose로 모든 서비스 빌드
+service-build:
+	docker compose build
+
+## Docker Compose로 모든 서비스 시작 (백그라운드)
+service-up:
+	docker compose up -d
+
+## Docker Compose로 모든 서비스 중지
+service-down:
+	docker compose down
+
+## Docker Compose로 모든 서비스 중지 및 볼륨 삭제 (DB 데이터 초기화)
+service-clean:
+	docker compose down -v
+
+
+# ==================================================================================== #
+# Application Container Commands
+# ==================================================================================== #
 ## (Docker) Docker Compose로 Spring Boot 앱 시작
 docker-run:
 	make service-up
 
-# ==================================================================================== #
-# Docker Compose Commands (기존과 동일)
-# ==================================================================================== #
-
-## Docker Compose로 모든 서비스 빌드 (dev/prod 환경 구분)
-service-build:
-ifeq ($(ENV), dev)
-	docker compose build
-else ifeq ($(ENV), prod)
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml build
-endif
-
-## Docker Compose로 모든 서비스 시작 (백그라운드)
-service-up:
-ifeq ($(ENV), dev)
-	docker compose up -d
-endif
-
-## Docker Compose로 모든 서비스 중지
-service-down:
-ifeq ($(ENV), dev)
-	docker compose down
-endif
-
-## Docker Compose로 모든 서비스 중지 및 볼륨 삭제 (DB 데이터 초기화)
-service-clean:
-ifeq ($(ENV), dev)
-	docker compose down -v
-endif
-
-
-# ==================================================================================== #
-# Application Container Commands (기존과 동일)
-# ==================================================================================== #
 api-up:
 	docker compose start demoapplication
 api-down:
@@ -112,18 +83,16 @@ api-log:
 
 
 # ==================================================================================== #
-# Maven Commands (기존과 동일)
+# Maven Commands
 # ==================================================================================== #
-local-code-test:
-	./mvnw test
 dependency-tree:
 	./mvnw dependency:tree
 
 
 # ==================================================================================== #
-# Helper Commands (기존과 동일)
+# Helper Commands
 # ==================================================================================== #
 help:
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\030[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: run stop restart logs test local-run docker-run service-build service-up service-down service-clean api-up api-down api-restart api-log local-code-test dependency-tree help
+.PHONY: run stop test local-run start-deps stop-deps docker-run service-build service-up service-down service-clean api-up api-down api-restart api-log dependency-tree help

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
-    @GetMapping("/test")
-    public ResponseEntity<String> adminTest() {
-        return ResponseEntity.ok("Hello, Admin!");
-    }
+  @GetMapping("/test")
+  public ResponseEntity<String> adminTest() {
+    return ResponseEntity.ok("Hello, Admin!");
+  }
 }
