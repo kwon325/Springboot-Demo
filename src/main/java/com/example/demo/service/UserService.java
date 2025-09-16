@@ -18,13 +18,6 @@ public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  /**
-   * 회원가입 메서드
-   *
-   * @param email    사용자 이메일
-   * @param password 사용자 비밀번호
-   * @return 저장된 사용자 정보
-   */
   public User signUp(String email, String password) {
     return signUp(email, password, Collections.singletonList("ROLE_USER"));
   }
@@ -43,12 +36,6 @@ public class UserService implements UserDetailsService {
     return userRepository.save(user);
   }
 
-  /**
-   * @param username the username identifying the user whose data is required.
-   * @return a fully populated user record (never `null`)
-   * @throws UsernameNotFoundException if the user could not be found or the user has no
-   *                                   GrantedAuthority
-   */
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     return userRepository.findByEmail(username)

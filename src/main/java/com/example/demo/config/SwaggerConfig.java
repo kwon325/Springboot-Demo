@@ -18,7 +18,6 @@ public class SwaggerConfig {
     Info info = new Info().title("Demo Project API Document").version("v0.0.1")
         .description("Demo 프로젝트의 API 명세서입니다.");
 
-    // API 요청 헤더에 인증 정보를 포함하기 위한 설정
     String securitySchemeName = "bearerAuth";
     SecurityRequirement securityRequirement = new SecurityRequirement().addList(securitySchemeName);
     Components components = new Components().addSecuritySchemes(securitySchemeName,

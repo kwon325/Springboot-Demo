@@ -36,14 +36,15 @@ public class AuthController {
 
   @PostMapping("/signin")
   public ResponseEntity<TokenResponse> signIn(
-      @RequestParam("username") String email, // @RequestBody를 @RequestParam으로 변경
+      @RequestParam("username") String email,
       @RequestParam("password") String password
   ) {
     Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(email, password) // 파라미터로 받은 email, password 사용
+        new UsernamePasswordAuthenticationToken(email, password)
     );
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
     String token = jwtTokenProvider.createToken(userDetails);
-    return ResponseEntity.ok(new TokenResponse(token));
+
+    return ResponseEntity.ok(new TokenResponse(token, "Bearer"));
   }
 }
