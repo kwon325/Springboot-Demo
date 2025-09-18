@@ -57,9 +57,10 @@ public class SecurityConfig {
         .httpBasic(AbstractHttpConfigurer::disable)
 
         .cors(Customizer.withDefaults())
-        
+
         .authorizeHttpRequests(
-            authz -> authz.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+            authz -> authz.requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll().requestMatchers("/api/auth/**").permitAll().anyRequest()
                 .authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
